@@ -1,17 +1,18 @@
 package com.secretsauce.encryption;
 
-import javax.crypto.BadPaddingException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.security.*;
+import java.security.Key;
 import java.util.Arrays;
 import java.util.Base64;
 
 public class AESGCMEncryptDecrypt {
 
+    private static Logger logger = LoggerFactory.getLogger(AESGCMEncryptDecrypt.class);
     static String aad = "aad";    // Additional authenticated data
 
     /**
@@ -25,7 +26,6 @@ public class AESGCMEncryptDecrypt {
     //private static final String key = "$ecrest$auce2018!$ecret$auce2018!";
     private static final String key = "$ecrest$auce2018";
     private static SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(), "AES");
-
 
 
     public static String encrypt(String plainText) {
@@ -60,14 +60,8 @@ public class AESGCMEncryptDecrypt {
             System.arraycopy(ciphertext, 0, finalResult, ivSizeReturnedByHSM, ciphertext.length);
             return finalResult;
 
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();
-        } catch (BadPaddingException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("Couldn't perform AES/GCM encryption", e);
         }
         return null;
     }
@@ -90,16 +84,8 @@ public class AESGCMEncryptDecrypt {
             // Decrypt the ciphertext and return the plaintext.
             return decCipher.doFinal(cipherText);
 
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        } catch (InvalidAlgorithmParameterException e) {
-            e.printStackTrace();
-        } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();
-        } catch (BadPaddingException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("Couldn't perform AES/GCM encryption", e);
         }
         return null;
     }

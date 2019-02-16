@@ -1,6 +1,7 @@
 package com.secretsauce.encryption;
 
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.HmacAlgorithms;
 import org.apache.commons.codec.digest.HmacUtils;
 
 import javax.crypto.Mac;
@@ -39,7 +40,7 @@ public class HMACUtil {
         }
     }
 
-    public static String hmac(String value) {
-        return new String(HmacUtils.hmacSha256Hex(key, value.getBytes()));
+    public static String hmac(String plainText) {
+        return new HmacUtils(HmacAlgorithms.HMAC_SHA_256, key).hmacHex(plainText);
     }
 }

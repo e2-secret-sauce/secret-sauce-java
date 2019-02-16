@@ -5,6 +5,8 @@ import com.secretsauce.encryption.AESGCMEncryptDecrypt;
 import com.secretsauce.encryption.HMACUtil;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,9 +15,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 
 public class ExcelFileProcessor {
+
+    private Logger logger = LoggerFactory.getLogger(ExcelFileProcessor.class);
 
     public static final String XLSX_FILE_PATH = "C:\\ds\\workspaces\\secretsauce\\secret-sauce-java\\src\\main\\resources\\unencrypted_dataset.xlsx";
     public static final String OUTPUT_FILE = "C:\\ds\\workspaces\\secretsauce\\secret-sauce-java\\src\\main\\resources\\encrypted_dataset.xls";
@@ -33,13 +36,9 @@ public class ExcelFileProcessor {
         FileInputStream fis = new FileInputStream(new File(XLSX_FILE_PATH));
         try (Workbook workbook = WorkbookFactory.create(fis)) {
 
-            // Retrieving the number of sheets in the Workbook
-            System.out.println("Workbook has " + workbook.getNumberOfSheets() + " Sheets : ");
+            logger.info("Workbook has {} sheet(s) to process", workbook.getNumberOfSheets());
 
-            // 1. You can obtain a sheetIterator and iterate over it
             Iterator<Sheet> sheetIterator = workbook.sheetIterator();
-            System.out.println("Retrieving Sheets using Iterator");
-
             while (sheetIterator.hasNext()) {
                 Sheet sheet = sheetIterator.next();
                 processSheet(sheet);
@@ -52,8 +51,7 @@ public class ExcelFileProcessor {
         fis.close();
     }
 
-    private List<DataElement> processSheet(Sheet sheet) {
-
+    private void processSheet(Sheet sheet) {
 
         ArrayList<DataElement> dataElements = new ArrayList<>();
         DataFormatter dataFormatter = new DataFormatter();
@@ -110,28 +108,31 @@ public class ExcelFileProcessor {
                 int cellCount = row.getLastCellNum() - 1;
                 for (int i = 0; i < cellCount; i++) {
                     Cell cell = row.getCell(i);
-                    // if Row index is PI mask it
+
                     String cellValue = dataFormatter.formatCellValue(cell);
-
                     if (isPI(cell.getColumnIndex(), dataElements)) {
-                        cell.setCellValue(HMACUtil.hmac(cellValue));
-                        //match column created and add value to that index
-                        String fieldName = sheet.getRow(1).getCell(cell.getColumnIndex()).getStringCellValue();
-                        Integer x = (Integer) encryptedValues.get(fieldName + "_Encrypt-Value");
-                        row.createCell(x.intValue(), CellType.STRING);
-                        row.getCell(x.intValue()).setCellValue(AESGCMEncryptDecrypt.encrypt(cellValue));
 
+                        String hmacCipher = HMACUtil.hmac(cellValue);
+                        logger.info("Applying HMAC: [{}] becomes [{}]", cellValue, hmacCipher);
+                        cell.setCellValue(hmacCipher);
+
+                        String fieldName = sheet.getRow(1).getCell(cell.getColumnIndex()).getStringCellValue();
+                        Integer x = encryptedValues.get(fieldName + "_Encrypt-Value");
+                        row.createCell(x.intValue(), CellType.STRING);
+
+                        String aesCipher = AESGCMEncryptDecrypt.encrypt(cellValue);
+                        logger.info("Applying AES: [{}] becomes [{}]", cellValue, aesCipher);
+                        row.getCell(x.intValue()).setCellValue(aesCipher);
                     }
 
                     if (cellValue.equalsIgnoreCase("EOF") || cellValue == null) {
-                        System.out.println("<<<<<<<<EOF>>>>>>");
                         break;
                     }
                     values.add(cellValue);
                 }
             }
         }
-        return dataElements;
+        logger.info("Completed processing dataset");
     }
 
     private boolean isPI(int columnIndex, ArrayList<DataElement> privateData) {
@@ -144,34 +145,6 @@ public class ExcelFileProcessor {
         }
 
         return result;
-    }
-
-    private static void printCellValue(Cell cell) {
-        switch(cell.getCellTypeEnum()) {
-            case BOOLEAN:
-                System.out.print(cell.getBooleanCellValue());
-                break;
-            case STRING:
-                System.out.print(cell.getRichStringCellValue().getString());
-                break;
-            case NUMERIC:
-                if (DateUtil.isCellDateFormatted(cell)) {
-                    System.out.print(cell.getDateCellValue());
-                } else {
-                    System.out.print(cell.getNumericCellValue());
-                }
-                break;
-            case FORMULA:
-                System.out.print(cell.getCellFormula());
-                break;
-            case BLANK:
-                System.out.print("");
-                break;
-            default:
-                System.out.print("");
-        }
-
-        System.out.print("\t");
     }
 
     private boolean checkIfRowIsEmpty(Row row) {
