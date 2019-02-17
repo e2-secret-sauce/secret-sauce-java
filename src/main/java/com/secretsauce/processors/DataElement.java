@@ -42,9 +42,4 @@ public class DataElement {
     public int getColumnCount() {
         return columnCount;
     }
-
-    public String toString() {
-        return "DataElements:->" + this.getColumnCount() + " FieldName->" + " isKey->" + this.isKey() + " isPI->" + this.isPI;
-    }
-
 }

@@ -4,18 +4,28 @@ import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.encryptionsdk.AwsCrypto;
 import com.amazonaws.encryptionsdk.kms.KmsMasterKeyProvider;
 import com.amazonaws.regions.Regions;
+import com.secretsauce.encryption.EncryptionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.Map;
 
-public class AwsKmsUtil {
+@Component
+@Profile("aws")
+public class AwsKmsUtil implements EncryptionUtil {
 
     private static Logger logger = LoggerFactory.getLogger(AwsKmsUtil.class);
 
-    public static final String KEY_ARN = "arn:aws:kms:us-east-1:775297465882:key/50837589-2e31-42ce-a327-d546767cda21";
+    private static final String KEY_ARN = "arn:aws:kms:us-east-1:775297465882:key/50837589-2e31-42ce-a327-d546767cda21";
 
+    public AwsKmsUtil() {
+        logger.info("Supplying encryption algorithms with keys from AWS KMS");
+    }
+
+    @Override
     public String encrypt(String data){
 
 
@@ -37,6 +47,7 @@ public class AwsKmsUtil {
         return cipherText;
     }
 
+    @Override
     public String decrypt(String cipherText){
         // Set up the KmsMasterKeyProvider backed by the default credentials
         final KmsMasterKeyProvider prov = KmsMasterKeyProvider

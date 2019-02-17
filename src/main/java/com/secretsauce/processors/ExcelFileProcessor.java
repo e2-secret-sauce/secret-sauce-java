@@ -1,12 +1,14 @@
 package com.secretsauce.processors;
 
 
-import com.secretsauce.encryption.AESGCMEncryptDecrypt;
-import com.secretsauce.encryption.HMACUtil;
+import com.secretsauce.encryption.EncryptionUtil;
+import com.secretsauce.encryption.local.HMACUtil;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,19 +18,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+@Service
 public class ExcelFileProcessor {
 
     private Logger logger = LoggerFactory.getLogger(ExcelFileProcessor.class);
 
+    private EncryptionUtil encryptionUtil = null;
+
     public static final String XLSX_FILE_PATH = "C:\\ds\\workspaces\\secretsauce\\secret-sauce-java\\src\\main\\resources\\unencrypted_dataset.xlsx";
     public static final String OUTPUT_FILE = "C:\\ds\\workspaces\\secretsauce\\secret-sauce-java\\src\\main\\resources\\encrypted_dataset.xls";
 
-    private ArrayList<String> fields = new ArrayList<>();
-    private ArrayList<String> values = new ArrayList<>();
-    private ArrayList<DataElement> keys = new ArrayList<>();
 
-    private HashMap<String, Integer> encryptedValues = new HashMap<String, Integer>();
-
+    @Autowired
+    public ExcelFileProcessor(EncryptionUtil encryptionUtil) {
+        this.encryptionUtil = encryptionUtil;
+    }
 
     public void processFile() throws IOException, InvalidFormatException {
 
@@ -52,7 +56,10 @@ public class ExcelFileProcessor {
     }
 
     private void processSheet(Sheet sheet) {
-
+        HashMap<String, Integer> encryptedValues = new HashMap<String, Integer>();
+        ArrayList<String> fields = new ArrayList<>();
+        ArrayList<String> values = new ArrayList<>();
+        ArrayList<DataElement> keys = new ArrayList<>();
         ArrayList<DataElement> dataElements = new ArrayList<>();
         DataFormatter dataFormatter = new DataFormatter();
 
@@ -113,15 +120,13 @@ public class ExcelFileProcessor {
                     if (isPI(cell.getColumnIndex(), dataElements)) {
 
                         String hmacCipher = HMACUtil.hmac(cellValue);
-                        logger.info("Applying HMAC: [{}] becomes [{}]", cellValue, hmacCipher);
                         cell.setCellValue(hmacCipher);
 
                         String fieldName = sheet.getRow(1).getCell(cell.getColumnIndex()).getStringCellValue();
                         Integer x = encryptedValues.get(fieldName + "_Encrypt-Value");
                         row.createCell(x.intValue(), CellType.STRING);
 
-                        String aesCipher = AESGCMEncryptDecrypt.encrypt(cellValue);
-                        logger.info("Applying AES: [{}] becomes [{}]", cellValue, aesCipher);
+                        String aesCipher = encryptionUtil.encrypt(cellValue);
                         row.getCell(x.intValue()).setCellValue(aesCipher);
                     }
 
@@ -164,9 +169,6 @@ public class ExcelFileProcessor {
         return true;
     }
 
-    public static void main(String[] args) throws IOException, InvalidFormatException {
-        new ExcelFileProcessor().processFile();
-    }
 }
 
 

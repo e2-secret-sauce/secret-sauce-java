@@ -1,17 +1,23 @@
 ### How to run the secret sauce
 
-Step 1 compile the code
+Compile the code
 ```bash
 mvn clean package
 ```
 
-Step 2. Run it
+Run it using hardcoded keys
 
 ```bash
-java -jar target\secretsauce-1.0.0-SNAPSHOT.jar
+java -jar -Dspring.profiles.active=local target\secretsauce-1.0.0-SNAPSHOT.jar
 ```
 
-Step 3. View the encrypted data set 
+Run it using retrieving keys from AWS KMS
+
+```bash
+java -jar -Dspring.profiles.active=aws target\secretsauce-1.0.0-SNAPSHOT.jar
+```
+
+View the encrypted data set 
 
 ```bash
 src\main\resouces\encrypted_dataset.xls
