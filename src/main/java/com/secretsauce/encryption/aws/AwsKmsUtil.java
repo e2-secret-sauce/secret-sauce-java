@@ -46,13 +46,9 @@ public class AwsKmsUtil {
                 .withKeysForEncryption(KEY_ARN)
                 .build();
 
-        //blogs.aws.amazon.com/security/post/Tx2LZ6WBJJANTNW/How-to-Protect-the-Integrity-of-Your-Encrypted-Data-by-Using-AWS-Key-Management
-        final Map<String, String> context = Collections.singletonMap("Example", "String");
-
         final AwsCrypto crypto = new AwsCrypto();
         String plainText = crypto.decryptString(prov, cipherText).getResult();
         logger.info("cipherText [{}] became plainText[{}]", cipherText, plainText);
         return plainText;
-
     }
 }
