@@ -28,7 +28,6 @@ public class AwsKmsUtil implements EncryptionUtil {
     @Override
     public String encrypt(String data){
 
-
         // Set up the KmsMasterKeyProvider backed by the default credentials
         final KmsMasterKeyProvider prov = KmsMasterKeyProvider
                         .builder()
@@ -43,7 +42,6 @@ public class AwsKmsUtil implements EncryptionUtil {
         final AwsCrypto crypto = new AwsCrypto();
         final String cipherText = crypto.encryptString(prov, data, context).getResult();
         logger.info("plainText [{}] became cipherText [{}]", data, cipherText);
-
         return cipherText;
     }
 
@@ -52,9 +50,9 @@ public class AwsKmsUtil implements EncryptionUtil {
         // Set up the KmsMasterKeyProvider backed by the default credentials
         final KmsMasterKeyProvider prov = KmsMasterKeyProvider
                 .builder()
-                .withCredentials(new ProfileCredentialsProvider("adfs"))
-                .withDefaultRegion(Regions.US_EAST_1.toString())
-                .withKeysForEncryption(KEY_ARN)
+                   .withCredentials(new ProfileCredentialsProvider("adfs"))
+                   .withDefaultRegion(Regions.US_EAST_1.toString())
+                   .withKeysForEncryption(KEY_ARN)
                 .build();
 
         final AwsCrypto crypto = new AwsCrypto();

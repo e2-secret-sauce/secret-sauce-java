@@ -12,14 +12,11 @@ import java.io.IOException;
 @SpringBootApplication
 public class SecretSauceApplication implements CommandLineRunner {
 
-
     @Autowired
     private ExcelFileProcessor excelFileProcessor;
 
     public static void main(String[] args) {
-
         SpringApplication.run(SecretSauceApplication.class, args);
-
     }
 
     @Override
