@@ -5,7 +5,14 @@ Compile the code
 mvn clean package
 ```
 
-Run it using hardcoded keys
+#### Usage
+
+```bash
+java -jar -Dspring.profiles.active=local target\secretsauce-1.0.0-SNAPSHOT.jar <file type> <file>
+```
+
+#### Examples
+Run it using locally generated keys
 
 ```bash
 java -jar -Dspring.profiles.active=local target\secretsauce-1.0.0-SNAPSHOT.jar
@@ -16,6 +23,8 @@ Run it using retrieving keys from AWS KMS
 ```bash
 java -jar -Dspring.profiles.active=aws target\secretsauce-1.0.0-SNAPSHOT.jar
 ```
+
+
 
 View the encrypted data set 
 

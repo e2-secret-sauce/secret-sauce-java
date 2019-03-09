@@ -1,19 +1,22 @@
 package com.secretsauce.processors;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.secretsauce.SecretSauceApplication;
 import org.apache.commons.collections4.IteratorUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class CsvProcessor {
+
+    private static Logger logger = LoggerFactory.getLogger(SecretSauceApplication.class);
 
     public static class CsvData {
 
@@ -89,7 +92,7 @@ public class CsvProcessor {
     }
 
     public CsvData parseCsv(InputStream in) {
-        
+
         Iterable<CSVRecord> records = this.records(in);
         boolean headerRow = true;
         List<String> headers = new ArrayList<>();
@@ -107,6 +110,20 @@ public class CsvProcessor {
         return new CsvData(headers, contents);
     }
 
+    public CsvData parseCsv(String filePath) {
+
+        String line = "";
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+
+            while ((line = br.readLine()) != null) {
+                System.out.println(line);
+            }
+        } catch (IOException e) {
+            logger.error("Unable to parse the csv file", e);
+        }
+        return null;
+    }
+
     private Iterable<CSVRecord> records(InputStream in) {
         try {
             return CSVFormat.DEFAULT.parse(new InputStreamReader(in));
@@ -114,5 +131,4 @@ public class CsvProcessor {
             throw new RuntimeException(e);
         }
     }
-
 }

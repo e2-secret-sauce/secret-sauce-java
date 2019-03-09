@@ -1,4 +1,4 @@
-package com.secretsauce;
+package com.secretsauce.controllers;
 
 import java.io.IOException;
 import java.util.LinkedList;

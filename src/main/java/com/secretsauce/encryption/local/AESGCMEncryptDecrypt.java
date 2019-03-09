@@ -85,11 +85,9 @@ public class AESGCMEncryptDecrypt implements EncryptionUtil{
             final int GCM_TAG_LENGTH = 16;
             GCMParameterSpec gcmSpec = new GCMParameterSpec(GCM_TAG_LENGTH * Byte.SIZE, iv);
 
-            // Configure the decription cipher.
             decCipher.init(Cipher.DECRYPT_MODE, key, gcmSpec);
             decCipher.updateAAD(aad.getBytes());
 
-            // Decrypt the ciphertext and return the plaintext.
             return decCipher.doFinal(cipherText);
 
         } catch (Exception e) {
