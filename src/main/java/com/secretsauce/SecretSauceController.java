@@ -3,8 +3,8 @@ package com.secretsauce;
 import java.io.IOException;
 import java.util.LinkedList;
 
-import com.secretsauce.encryption.AESGCMEncryptDecrypt;
-import com.secretsauce.encryption.HMACUtil;
+import com.secretsauce.encryption.local.AESGCMEncryptDecrypt;
+import com.secretsauce.encryption.local.HMACUtil;
 import com.secretsauce.processors.CsvProcessor;
 import com.secretsauce.processors.CsvProcessor.CsvData;
 import com.secretsauce.processors.CsvProcessor.Header;
@@ -52,7 +52,7 @@ public class SecretSauceController {
             for (int j = 0; j < csvData.getContents().get(i).size(); j++) {
                 if (csvData.getHeaders().get(j).isProtect()) {
                     protectedData.getContents().get(i).add(HMACUtil.hmac(csvData.getContents().get(i).get(j)));
-                    protectedData.getContents().get(i).add(AESGCMEncryptDecrypt.encrypt(csvData.getContents().get(i).get(j)));
+                    protectedData.getContents().get(i).add(new AESGCMEncryptDecrypt().encrypt(csvData.getContents().get(i).get(j)));
                 } else {
                     protectedData.getContents().get(i).add(csvData.getContents().get(i).get(j));
                 }
