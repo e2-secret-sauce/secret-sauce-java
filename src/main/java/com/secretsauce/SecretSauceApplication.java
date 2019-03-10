@@ -2,6 +2,7 @@ package com.secretsauce;
 
 import com.secretsauce.processors.CsvProcessor;
 import com.secretsauce.processors.ExcelFileProcessor;
+import com.secretsauce.storage.S3Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,9 @@ public class SecretSauceApplication implements CommandLineRunner {
     @Autowired
     private CsvProcessor csvProcessor;
 
+    @Autowired
+    private S3Publisher s3Storage;
+
     public static void main(String[] args) {
         SpringApplication.run(SecretSauceApplication.class, args);
     }
@@ -37,6 +41,7 @@ public class SecretSauceApplication implements CommandLineRunner {
             excelFileProcessor.processFile();
         } else if ("csv".equalsIgnoreCase(fileType)){
             CsvProcessor.CsvData csvData = csvProcessor.parseCsv(filePath);
+            s3Storage.publish(filePath);
         }
 
         exit(0);

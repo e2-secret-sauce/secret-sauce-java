@@ -111,7 +111,6 @@ public class CsvProcessor {
     }
 
     public CsvData parseCsv(String filePath) {
-
         String line = "";
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
 
