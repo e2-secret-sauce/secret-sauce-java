@@ -16,16 +16,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class CsvProcessor {
 
-    private static Logger logger = LoggerFactory.getLogger(SecretSauceApplication.class);
-
     public static class CsvData {
 
         private List<Header> headers;
         private List<List<String>> contents;
-
-        public CsvData() {
-
-        }
 
         public CsvData(List<String> headers, List<List<String>> contents) {
             this.headers = headers.stream().map(h -> new Header(h)).collect(Collectors.toList());
@@ -58,11 +52,6 @@ public class CsvProcessor {
     public static class Header {
 
         private String text;
-        private boolean protect = false;
-
-        public Header() {
-
-        }
 
         public Header(String text) {
             this.text = text;
@@ -72,23 +61,9 @@ public class CsvProcessor {
             return text;
         }
 
-        public void setText(String text) {
-            this.text = text;
-        }
-
         public boolean isProtect() {
-            return protect;
+            return getText().endsWith("_PI");
         }
-
-        public void setProtect(boolean protect) {
-            this.protect = protect;
-        }
-
-        @Override
-        public String toString() {
-            return "text=" + this.text + "; protect=" + this.protect;
-        }
-
     }
 
     public CsvData parseCsv(InputStream in) {
@@ -108,19 +83,6 @@ public class CsvProcessor {
         }
 
         return new CsvData(headers, contents);
-    }
-
-    public CsvData parseCsv(String filePath) {
-        String line = "";
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-
-            while ((line = br.readLine()) != null) {
-                System.out.println(line);
-            }
-        } catch (IOException e) {
-            logger.error("Unable to parse the csv file", e);
-        }
-        return null;
     }
 
     private Iterable<CSVRecord> records(InputStream in) {

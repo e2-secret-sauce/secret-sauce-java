@@ -9,6 +9,7 @@ import com.secretsauce.processors.CsvProcessor;
 import com.secretsauce.processors.CsvProcessor.CsvData;
 import com.secretsauce.processors.CsvProcessor.Header;
 
+import com.secretsauce.processors.CsvUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,32 +35,7 @@ public class SecretSauceController {
 
     @RequestMapping("/protect")
     public CsvData protect(@RequestBody CsvData csvData) {
-        System.out.println(csvData);
-        CsvData protectedData = new CsvData(new LinkedList<>(), new LinkedList<>());
-
-        for (int i = 0; i < csvData.getContents().size(); i++) {
-            protectedData.getContents().add(new LinkedList<>());
-        }
-
-        for (Header header : csvData.getHeaders()) {
-            protectedData.getHeaders().add(new Header(header.getText()));
-            if (header.isProtect()) {
-                protectedData.getHeaders().add(new Header(header.getText() + "_ENC"));
-            }
-        }
-
-        for (int i = 0; i < csvData.getHeaders().size(); i++) {
-            for (int j = 0; j < csvData.getContents().get(i).size(); j++) {
-                if (csvData.getHeaders().get(j).isProtect()) {
-                    protectedData.getContents().get(i).add(HMACUtil.hmac(csvData.getContents().get(i).get(j)));
-                    protectedData.getContents().get(i).add(new AESGCMEncryptDecrypt().encrypt(csvData.getContents().get(i).get(j)));
-                } else {
-                    protectedData.getContents().get(i).add(csvData.getContents().get(i).get(j));
-                }
-            }
-        }
-
-        return protectedData;
+        return CsvUtil.encryptCsvFile(csvData);
     }
 
 }
