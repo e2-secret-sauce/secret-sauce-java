@@ -21,7 +21,7 @@ public class S3Publisher {
 
         AmazonS3 s3client = AmazonS3ClientBuilder
                 .standard()
-                .withCredentials(new ProfileCredentialsProvider("personal"))
+                .withCredentials(new ProfileCredentialsProvider("adfs"))
                 .withRegion("us-east-1")
                 .build();
 
@@ -31,8 +31,10 @@ public class S3Publisher {
             logger.info("* {}", bucket.getName());
         }
 
-        String bucketName = "cactus.test.bucket";
+        String bucketName = "775297465882-secret-sauce-data";
         PutObjectRequest request = new PutObjectRequest(bucketName, fileName, new File(fileName));
+
+        logger.info("Publishing [{}] to S3 Bucket [{}]", bucketName, fileName);
         s3client.putObject(request);
     }
 }

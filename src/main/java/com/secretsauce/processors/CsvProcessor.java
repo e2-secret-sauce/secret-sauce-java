@@ -30,17 +30,10 @@ public class CsvProcessor {
             return headers;
         }
 
-        public void setHeaders(List<Header> headers) {
-            this.headers = headers;
-        }
-
         public List<List<String>> getContents() {
             return contents;
         }
 
-        public void setContents(List<List<String>> contents) {
-            this.contents = contents;
-        }
 
         @Override
         public String toString() {
