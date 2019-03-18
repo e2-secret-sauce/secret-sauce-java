@@ -23,6 +23,9 @@ public class SecretSauceController {
     @Autowired
     private CsvProcessor csvProcessor;
 
+    @Autowired
+    private CsvUtil csvUtil;
+
     @RequestMapping("/")
     public String index() {
         return "Greetings from Spring Boot!";
@@ -35,7 +38,7 @@ public class SecretSauceController {
 
     @RequestMapping("/protect")
     public CsvData protect(@RequestBody CsvData csvData) {
-        return CsvUtil.encryptCsvFile(csvData);
+        return csvUtil.encryptCsvFile(csvData);
     }
 
 }

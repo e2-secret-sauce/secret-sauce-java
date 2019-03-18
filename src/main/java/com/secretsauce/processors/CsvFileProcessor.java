@@ -24,6 +24,9 @@ public class CsvFileProcessor {
     private CsvProcessor csvProcessor;
 
     @Autowired
+    private CsvUtil csvUtil;
+
+    @Autowired
     private S3Publisher s3Storage;
 
 
@@ -32,7 +35,7 @@ public class CsvFileProcessor {
         logger.info("Encrypting PI data elements in file [{}]", unencryptedFileName);
 
         CsvProcessor.CsvData csvData = csvProcessor.parseCsv(new FileInputStream(new File(unencryptedFileName)));
-        CsvProcessor.CsvData encryptedCsv = CsvUtil.encryptCsvFile(csvData);
+        CsvProcessor.CsvData encryptedCsv = csvUtil.encryptCsvFile(csvData);
 
         String processId = UUID.randomUUID().toString();
         String encryptedFileName = processId + ".encrypted.travel.data.csv";

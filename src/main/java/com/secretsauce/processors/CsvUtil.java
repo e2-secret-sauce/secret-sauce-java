@@ -1,14 +1,23 @@
 package com.secretsauce.processors;
 
-import com.secretsauce.encryption.local.AESGCMEncryptDecrypt;
+import com.secretsauce.encryption.EncryptionUtil;
 import com.secretsauce.encryption.local.HMACUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
 
+@Service
 public class CsvUtil {
 
-    public static CsvProcessor.CsvData encryptCsvFile(CsvProcessor.CsvData csvData){
-        System.out.println(csvData);
+    private EncryptionUtil encryptionUtil;
+
+    @Autowired
+    public CsvUtil(EncryptionUtil encryptionUtil) {
+        this.encryptionUtil = encryptionUtil;
+    }
+
+    public CsvProcessor.CsvData encryptCsvFile(CsvProcessor.CsvData csvData){
         CsvProcessor.CsvData protectedData = new CsvProcessor.CsvData(new LinkedList<>(), new LinkedList<>());
 
         for (int i = 0; i < csvData.getContents().size(); i++) {
@@ -26,7 +35,7 @@ public class CsvUtil {
             for (int j = 0; j < csvData.getContents().get(i).size(); j++) {
                 if (csvData.getHeaders().get(j).isProtect()) {
                     protectedData.getContents().get(i).add(HMACUtil.hmac(csvData.getContents().get(i).get(j)));
-                    protectedData.getContents().get(i).add(new AESGCMEncryptDecrypt().encrypt(csvData.getContents().get(i).get(j)));
+                    protectedData.getContents().get(i).add(encryptionUtil.encrypt(csvData.getContents().get(i).get(j)));
                 } else {
                     protectedData.getContents().get(i).add(csvData.getContents().get(i).get(j));
                 }

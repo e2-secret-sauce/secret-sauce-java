@@ -7,8 +7,14 @@ mvn clean package
 
 #### Usage
 
+Encrypt and Publish
 ```bash
-java -jar -Dspring.profiles.active=local target\secretsauce-1.0.0-SNAPSHOT.jar <file type> <file>
+java -jar -Dspring.profiles.active=local target\secretsauce-1.0.0-SNAPSHOT.jar publish travel_data.csv
+```
+
+Download and Analyze
+```bash
+java -jar -Dspring.profiles.active=local target\secretsauce-1.0.0-SNAPSHOT.jar analyze
 ```
 
 #### Examples

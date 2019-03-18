@@ -34,7 +34,7 @@ public class S3Publisher {
         String bucketName = "775297465882-secret-sauce-data";
         PutObjectRequest request = new PutObjectRequest(bucketName, fileName, new File(fileName));
 
-        logger.info("Publishing [{}] to S3 Bucket [{}]", bucketName, fileName);
+        logger.info("Publishing [{}] to S3 Bucket [{}]", fileName, bucketName);
         s3client.putObject(request);
     }
 }
