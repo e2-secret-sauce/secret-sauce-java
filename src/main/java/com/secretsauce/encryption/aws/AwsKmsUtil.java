@@ -31,7 +31,7 @@ public class AwsKmsUtil implements EncryptionUtil {
         // Set up the KmsMasterKeyProvider backed by the default credentials
         final KmsMasterKeyProvider prov = KmsMasterKeyProvider
                         .builder()
-                          .withCredentials(new ProfileCredentialsProvider("adfspcl"))
+                          .withCredentials(new ProfileCredentialsProvider("adfs"))
                           .withDefaultRegion(Regions.US_EAST_1.toString())
                           .withKeysForEncryption(KEY_ARN)
                         .build();

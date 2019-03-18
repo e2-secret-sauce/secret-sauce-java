@@ -2,6 +2,7 @@ package com.secretsauce;
 
 import com.secretsauce.processors.CsvFileProcessor;
 import com.secretsauce.processors.ExcelFileProcessor;
+import com.secretsauce.processors.ResultsProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,9 @@ public class SecretSauceApplication implements CommandLineRunner {
     @Autowired
     private CsvFileProcessor csvFileProcessor;
 
+    @Autowired
+    private ResultsProcessor resultsProcessor;
+
     public static void main(String[] args) {
         SpringApplication.run(SecretSauceApplication.class, args);
     }
@@ -29,14 +33,19 @@ public class SecretSauceApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        String fileType = args[0];
-        String filePath = args[1];
-        logger.info("Processing file type [{}]", fileType);
+        String action = args[0];  //analyze or publish
 
-        if ("excel".equalsIgnoreCase(fileType)) {
-            excelFileProcessor.processFile();
-        } else if ("csv".equalsIgnoreCase(fileType)) {
-            csvFileProcessor.processFile(filePath);
+        if ("publish".equals(action)) {
+            String filePath = args[1];
+            logger.info("Processing file type [{}]", filePath);
+            if (filePath.endsWith(".xlsx")) {
+                excelFileProcessor.processFile();
+            } else if (filePath.endsWith(".csv")) {
+                csvFileProcessor.processFile(filePath);
+            }
+        } else if ("analyze".equalsIgnoreCase(action)) {
+            logger.info("Downloading results from AWS");
+            resultsProcessor.analyzeResults();
         }
 
         exit(0);
